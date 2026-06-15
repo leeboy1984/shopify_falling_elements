@@ -1,0 +1,55 @@
+# Floating Elements — Shopify app configuration.
+# Run `npm run config:link` after creating the app in your Partner Dashboard
+# to fill in `client_id`. Docs: https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "REPLACE_AFTER_CONFIG_LINK"
+name = "Floating Elements"
+handle = "floating-elements"
+application_url = "https://localhost:3000"
+embedded = true
+
+[build]
+include_config_on_deploy = true
+automatically_update_urls_on_dev = true
+
+[access_scopes]
+# Minimal scopes. `write_products` is here only as a placeholder; the storefront
+# effect needs no Admin data, so trim this once you know your real needs.
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://localhost:3000/auth/callback",
+  "https://localhost:3000/auth/shopify/callback",
+  "https://localhost:3000/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2025-01"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app_subscriptions/update" ]
+  uri = "/webhooks/app/subscriptions_update"
+
+  # Mandatory GDPR / privacy compliance webhooks (required for App Store review).
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
+  uri = "/webhooks/compliance"
+
+# App Proxy: lets the storefront fetch the live effect config + custom assets
+# from https://{shop}/apps/floating-elements/config
+[app_proxy]
+url = "https://localhost:3000/proxy"
+subpath = "floating-elements"
+prefix = "apps"
+
+[pos]
+embedded = false

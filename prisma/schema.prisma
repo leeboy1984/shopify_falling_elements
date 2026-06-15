@@ -1,0 +1,73 @@
+// Floating Elements data model.
+// Local dev uses SQLite. For production switch `provider` to "postgresql"
+// and point DATABASE_URL at a managed Postgres instance.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Required by @shopify/shopify-app-session-storage-prisma. Do not rename fields.
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+}
+
+// One row per shop holding the configured falling-elements effect.
+model ShopConfig {
+  id        String    @id @default(cuid())
+  shop      String    @unique
+  // Cached plan ("free" | "pro" | "premium"), refreshed on admin visits and via
+  // the app_subscriptions/update webhook. The storefront proxy reads this so it
+  // never has to hit the Admin API on a customer-facing request.
+  plan      String    @default("free")
+  enabled   Boolean   @default(true)
+  // Id of the selected catalog element (see app/lib/catalog.ts).
+  preset    String    @default("autumn-leaves")
+  density   Int       @default(40) // number of particles on screen
+  speed     Int       @default(50) // 0-100 fall speed
+  size      Int       @default(28) // base size in px
+  wind      Int       @default(0) // -100..100 horizontal drift
+  rotation  Boolean   @default(true)
+  opacity   Int       @default(90) // 0-100
+  pages     String    @default("all") // all | home | product | collection | cart
+  // Optional seasonal scheduling window.
+  startAt   DateTime?
+  endAt     DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  assets CustomAsset[]
+}
+
+// Premium-only custom uploads (emoji char, sanitized SVG, or hosted image).
+model CustomAsset {
+  id        String   @id @default(cuid())
+  shop      String
+  name      String
+  kind      String // "emoji" | "svg" | "image"
+  value     String // emoji char, sanitized SVG markup, or asset URL
+  createdAt DateTime @default(now())
+
+  shopConfig   ShopConfig? @relation(fields: [shopConfigId], references: [id], onDelete: Cascade)
+  shopConfigId String?
+
+  @@index([shop])
+}

@@ -1,0 +1,44 @@
+{% comment %}
+  Floating Elements — app embed block.
+  Merchants enable this from: Theme editor → Customize → App embeds.
+  The on/off and page-targeting live in the app dashboard; this block just
+  loads the renderer, which fetches the live config from the App Proxy.
+{% endcomment %}
+
+{% if block.settings.enabled %}
+  <script
+    src="{{ 'floating-elements.js' | asset_url }}"
+    data-config-url="/apps/floating-elements/config"
+    data-template="{{ request.page_type }}"
+    data-z-index="{{ block.settings.z_index }}"
+    defer></script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Floating Elements",
+  "target": "body",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enabled",
+      "label": "Activar efecto en la tienda",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "Elige el elemento, la cantidad, la velocidad y dónde se muestra desde el panel de la aplicación Floating Elements."
+    },
+    {
+      "type": "range",
+      "id": "z_index",
+      "label": "Profundidad (z-index)",
+      "min": 0,
+      "max": 2147483000,
+      "step": 1000,
+      "default": 2147483000,
+      "info": "Bájalo si el efecto tapa menús u otros elementos fijos."
+    }
+  ]
+}
+{% endschema %}

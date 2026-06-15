@@ -1,0 +1,21 @@
+node_modules
+/build
+/.cache
+/public/build
+.env
+.env.*
+!.env.example
+.shopify
+.DS_Store
+*.log
+
+# Prisma local dev db
+prisma/*.db
+prisma/*.db-journal
+prisma/dev.sqlite
+
+# Vite
+.vite
+
+# Local editor / Claude settings
+.claude/settings.local.json
