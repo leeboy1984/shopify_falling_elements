@@ -8,7 +8,9 @@ declare module "@remix-run/node" {
   }
 }
 
-const host = new URL(process.env.SHOPIFY_APP_URL || "http://localhost").hostname;
+const host = new URL(
+  process.env.SHOPIFY_APP_URL || process.env.HOST || "http://localhost",
+).hostname;
 
 let hmrConfig;
 if (host === "localhost") {
@@ -29,7 +31,10 @@ if (host === "localhost") {
 
 export default defineConfig({
   server: {
-    allowedHosts: [host],
+    // `host` is the SHOPIFY_APP_URL hostname (the tunnel when run via the CLI).
+    // The leading-dot entries are wildcards: Shopify's Cloudflare dev tunnels get
+    // a fresh random `*.trycloudflare.com` host each run, so allow the whole zone.
+    allowedHosts: [host, "localhost", ".trycloudflare.com", ".shopify.dev"],
     cors: {
       preflightContinue: true,
     },

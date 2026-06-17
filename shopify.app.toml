@@ -2,7 +2,7 @@
 # Run `npm run config:link` after creating the app in your Partner Dashboard
 # to fill in `client_id`. Docs: https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "REPLACE_AFTER_CONFIG_LINK"
+client_id = "2eb1782113e5018cdf35ca53bf44efb3"
 name = "Floating Elements"
 handle = "floating-elements"
 application_url = "https://localhost:3000"
@@ -13,9 +13,9 @@ include_config_on_deploy = true
 automatically_update_urls_on_dev = true
 
 [access_scopes]
-# Minimal scopes. `write_products` is here only as a placeholder; the storefront
-# effect needs no Admin data, so trim this once you know your real needs.
-scopes = "write_products"
+# Needed to write the per-shop effect config to a shop metafield that the theme
+# app extension reads on the storefront.
+scopes = "write_metafields"
 
 [auth]
 redirect_urls = [
@@ -25,7 +25,7 @@ redirect_urls = [
 ]
 
 [webhooks]
-api_version = "2025-01"
+api_version = "2026-07"
 
   [[webhooks.subscriptions]]
   topics = [ "app/uninstalled" ]
@@ -43,13 +43,6 @@ api_version = "2025-01"
   [[webhooks.subscriptions]]
   compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
   uri = "/webhooks/compliance"
-
-# App Proxy: lets the storefront fetch the live effect config + custom assets
-# from https://{shop}/apps/floating-elements/config
-[app_proxy]
-url = "https://localhost:3000/proxy"
-subpath = "floating-elements"
-prefix = "apps"
 
 [pos]
 embedded = false

@@ -12,7 +12,9 @@ const shopify = shopifyApp({
   apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
   apiVersion: ApiVersion.January25,
   scopes: process.env.SCOPES?.split(","),
-  appUrl: process.env.SHOPIFY_APP_URL || "",
+  // The Shopify CLI injects the tunnel URL at runtime. Newer CLIs use
+  // SHOPIFY_APP_URL, older ones HOST — accept either.
+  appUrl: process.env.SHOPIFY_APP_URL || process.env.HOST || "",
   authPathPrefix: "/auth",
   sessionStorage: new PrismaSessionStorage(prisma),
   distribution: AppDistribution.AppStore,

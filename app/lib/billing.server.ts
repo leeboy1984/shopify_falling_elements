@@ -1,6 +1,7 @@
 import type { AdminApiContext } from "@shopify/shopify-app-remix/server";
 import { planFromSubscriptionNames, type PlanId } from "./plans";
 import { setPlan } from "./config.server";
+import { publishStorefrontConfig } from "./storefront.server";
 
 // We only need the GraphQL client; structural type so it accepts the admin
 // context whether or not the REST resources are present.
@@ -47,6 +48,9 @@ export async function syncPlan(
 ): Promise<PlanId> {
   const plan = await getActivePlan(admin);
   await setPlan(shop, plan);
+  // Keep the storefront metafield in sync on every admin visit (covers fresh
+  // installs and revalidation after a save).
+  await publishStorefrontConfig(admin, shop);
   return plan;
 }
 

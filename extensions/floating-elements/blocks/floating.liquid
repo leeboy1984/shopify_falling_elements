@@ -5,10 +5,11 @@
   loads the renderer, which fetches the live config from the App Proxy.
 {% endcomment %}
 
-{% if block.settings.enabled %}
+{% assign fe_config = shop.metafields.floating_elements.config.value %}
+{% if block.settings.enabled and fe_config %}
   <script
     src="{{ 'floating-elements.js' | asset_url }}"
-    data-config-url="/apps/floating-elements/config"
+    data-config="{{ fe_config | json | escape }}"
     data-template="{{ request.page_type }}"
     data-z-index="{{ block.settings.z_index }}"
     defer></script>
@@ -30,14 +31,16 @@
       "content": "Elige el elemento, la cantidad, la velocidad y dónde se muestra desde el panel de la aplicación Floating Elements."
     },
     {
-      "type": "range",
+      "type": "select",
       "id": "z_index",
-      "label": "Profundidad (z-index)",
-      "min": 0,
-      "max": 2147483000,
-      "step": 1000,
-      "default": 2147483000,
-      "info": "Bájalo si el efecto tapa menús u otros elementos fijos."
+      "label": "Capa (profundidad)",
+      "options": [
+        { "value": "2147483000", "label": "Por encima de todo" },
+        { "value": "999", "label": "Por encima del contenido" },
+        { "value": "1", "label": "Por debajo de menús y barras fijas" }
+      ],
+      "default": "2147483000",
+      "info": "Baja la capa si el efecto tapa menús u otros elementos fijos."
     }
   ]
 }
